@@ -4,3 +4,5 @@
 ``` npm install ```
 * Para rodar um servidor local, use:
 ``` npm start ```
+# Site na vercel
+https://todo-list-omega-eight.vercel.app/
