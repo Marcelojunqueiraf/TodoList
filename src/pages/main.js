@@ -1,23 +1,20 @@
-import axios from 'axios';
-import {useEffect, useState} from 'react'
+import {useContext, useEffect, useState} from 'react'
 import Todo from '../components/Todo';
+import api from '../resources/api';
+import UserContext from '../Contexts/context';
+import { Redirect } from 'react-router';
+import { Link } from 'react-router-dom';
 
 function Main(){
       const [lista, setLista] = useState([])
       const [title, setTitle] = useState("")
       const [description, setDescription] = useState("")
-    
 
-      // efeito colateral, coisa de fora
-      // UseEffect
-    
-    //sincrono esperar todos os ingredientes chegarem
-    //assincrono usar o que já tem enquanto espera o resto chegar
-
+      const {user} = useContext(UserContext)
 
       useEffect(()=>{
         async function getTodos(){
-            axios.get("http://198.74.50.215:3000/user/2/todos/")
+            api.get(`/user/${user.id}/todos/`)
             .then((resp)=>{
                 setLista(resp.data)
             })
@@ -25,9 +22,9 @@ function Main(){
                 //redirecionar página
                 console.log("ocorreu um erro" + err)
             })
-        }
-        getTodos()
-      }, []//array de dependências
+          }
+          getTodos()
+      }, [user]//array de dependências
       )
 
       function handleCreation(event){
@@ -39,7 +36,7 @@ function Main(){
         }
 
         async function createTodo(){
-            axios.post("http://198.74.50.215:3000/user/2/todos/", data)
+            api.post(`/user/${user.id}/todos/`, data)
             .then((resp)=>{
                 const nTodo = resp.data
                 setLista([...lista, nTodo])
@@ -52,11 +49,12 @@ function Main(){
         }
         createTodo()
       }
-
+    if(user){
     return(
         <div className="App">
         <h1>Todo List</h1>
-        
+        <h2>Olá <Link to="/profile">{user.name}</Link> seu id é {user.id}</h2>
+
         <form onSubmit={handleCreation}>
           <label>Title</label>
           <br/>
@@ -75,7 +73,8 @@ function Main(){
           )}
         </ul>
       </div>
-    )
+    )}
+    else return <Redirect to="/login"/>
 }
 
 export default Main
